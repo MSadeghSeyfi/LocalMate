@@ -14,10 +14,15 @@ if not exist venv (
     exit /b 1
 )
 
-echo [✓] Activating virtual environment...
+echo [OK] Activating virtual environment...
 call venv\Scripts\activate.bat
+if %errorlevel% neq 0 (
+    echo [ERROR] Failed to activate virtual environment!
+    pause
+    exit /b 1
+)
 
-echo [✓] Starting FastAPI server...
+echo [OK] Starting FastAPI server...
 echo.
 echo ========================================
 echo Server is running!
@@ -33,3 +38,13 @@ echo.
 
 cd backend
 python main.py
+if %errorlevel% neq 0 (
+    echo.
+    echo [ERROR] Server stopped with an error!
+    cd ..
+    pause
+    exit /b 1
+)
+
+cd ..
+pause
