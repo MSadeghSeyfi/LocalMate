@@ -1,0 +1,248 @@
+/* Neumorphism Design System */
+
+:root {
+    --bg-light: #e0e5ec;
+    --shadow-dark: #a3b1c6;
+    --shadow-light: #ffffff;
+    --text-primary: #2c3e50;
+    --text-secondary: #7f8c8d;
+    --accent: #3498db;
+    --accent-hover: #2980b9;
+    --error: #e74c3c;
+    --success: #2ecc71;
+
+    --shadow-distance: 10px;
+    --border-radius: 15px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg-light);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    direction: ltr;
+}
+
+body.rtl {
+    direction: rtl;
+}
+
+/* Neumorphic Container */
+.neuro-container {
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: 40px;
+    box-shadow:
+        var(--shadow-distance) var(--shadow-distance) calc(var(--shadow-distance) * 2) var(--shadow-dark),
+        calc(var(--shadow-distance) * -1) calc(var(--shadow-distance) * -1) calc(var(--shadow-distance) * 2) var(--shadow-light);
+    max-width: 450px;
+    width: 90%;
+}
+
+.neuro-inset {
+    background: var(--bg-light);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    box-shadow:
+        inset 5px 5px 10px var(--shadow-dark),
+        inset -5px -5px 10px var(--shadow-light);
+}
+
+/* Typography */
+h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 14px;
+}
+
+input, select {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: var(--bg-light);
+    box-shadow:
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+    font-size: 15px;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus {
+    box-shadow:
+        inset 6px 6px 12px var(--shadow-dark),
+        inset -6px -6px 12px var(--shadow-light);
+}
+
+input::placeholder {
+    color: var(--text-secondary);
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--bg-light);
+    color: var(--text-primary);
+    box-shadow:
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+}
+
+.btn:hover {
+    box-shadow:
+        4px 4px 8px var(--shadow-dark),
+        -4px -4px 8px var(--shadow-light);
+}
+
+.btn:active {
+    box-shadow:
+        inset 4px 4px 8px var(--shadow-dark),
+        inset -4px -4px 8px var(--shadow-light);
+}
+
+.btn-primary {
+    background: linear-gradient(145deg, #3aa0e8, #2e85c4);
+    color: white;
+    box-shadow:
+        6px 6px 12px var(--shadow-dark),
+        -6px -6px 12px var(--shadow-light);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(145deg, #2e85c4, #3aa0e8);
+}
+
+/* Links */
+.link-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.link-text a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.link-text a:hover {
+    color: var(--accent-hover);
+}
+
+/* Language Selector */
+.language-selector {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+body.rtl .language-selector {
+    right: auto;
+    left: 20px;
+}
+
+.language-selector select {
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: auto;
+    min-width: 120px;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.alert-error {
+    background: linear-gradient(145deg, #f08080, #e74c3c);
+    color: white;
+    box-shadow:
+        4px 4px 8px var(--shadow-dark),
+        -4px -4px 8px var(--shadow-light);
+}
+
+.alert-success {
+    background: linear-gradient(145deg, #52d68a, #2ecc71);
+    color: white;
+    box-shadow:
+        4px 4px 8px var(--shadow-dark),
+        -4px -4px 8px var(--shadow-light);
+}
+
+/* Loading */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .neuro-container {
+        padding: 30px 20px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+}

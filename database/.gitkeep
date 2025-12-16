@@ -1,0 +1,2 @@
+# This file ensures the database folder is tracked by git
+# But the actual .db files are ignored

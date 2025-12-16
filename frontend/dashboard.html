@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalMate - Dashboard</title>
+    <link rel="stylesheet" href="css/neumorphism.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-left h1 {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        body.rtl .header-left h1 {
+            text-align: right;
+        }
+
+        .header-left .welcome-text {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .neuro-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            box-shadow:
+                5px 5px 10px var(--shadow-dark),
+                -5px -5px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .neuro-btn:hover {
+            box-shadow:
+                3px 3px 6px var(--shadow-dark),
+                -3px -3px 6px var(--shadow-light);
+        }
+
+        .neuro-btn:active {
+            box-shadow:
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
+        }
+
+        .content-area {
+            background: var(--bg-light);
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow:
+                10px 10px 20px var(--shadow-dark),
+                -10px -10px 20px var(--shadow-light);
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .empty-state {
+            color: var(--text-secondary);
+        }
+
+        .empty-state h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .language-select-dashboard {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: var(--bg-light);
+            box-shadow:
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .header-left h1 {
+                text-align: center !important;
+            }
+
+            .content-area {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1 data-i18n="dashboard">Dashboard</h1>
+                <p class="welcome-text">
+                    <span data-i18n="welcome">Welcome</span>, <strong id="usernameDisplay"></strong>
+                </p>
+            </div>
+            <div class="header-right">
+                <select id="languageSelect" class="language-select-dashboard">
+                    <option value="en">English</option>
+                    <option value="fa">فارسی</option>
+                </select>
+                <button class="neuro-btn" id="logoutBtn">
+                    <span data-i18n="logout">Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <div class="empty-state">
+                <h2>🚀</h2>
+                <h2 id="emptyTitle">Coming Soon</h2>
+                <p id="emptyText">This dashboard is under construction. More features will be added soon!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if user is authenticated
+        if (!isAuthenticated()) {
+            redirectToLogin();
+        }
+
+        // Display username
+        const userData = getUserData();
+        document.getElementById('usernameDisplay').textContent = userData.username || 'User';
+
+        // Update empty state text based on language
+        function updateEmptyState() {
+            const emptyTitle = document.getElementById('emptyTitle');
+            const emptyText = document.getElementById('emptyText');
+
+            if (currentLanguage === 'fa') {
+                emptyTitle.textContent = 'به زودی';
+                emptyText.textContent = 'این پنل در حال ساخت است. ویژگی‌های بیشتری به زودی اضافه خواهند شد!';
+            } else {
+                emptyTitle.textContent = 'Coming Soon';
+                emptyText.textContent = 'This dashboard is under construction. More features will be added soon!';
+            }
+        }
+
+        // Override updatePageText to also update empty state
+        const originalUpdatePageText = updatePageText;
+        updatePageText = function() {
+            originalUpdatePageText();
+            updateEmptyState();
+        };
+
+        // Initial update
+        updateEmptyState();
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            if (confirm(currentLanguage === 'fa' ? 'آیا مطمئن هستید که می‌خواهید خارج شوید؟' : 'Are you sure you want to logout?')) {
+                logout();
+            }
+        });
+    </script>
+</body>
+</html>

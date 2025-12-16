@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalMate - Login</title>
+    <link rel="stylesheet" href="css/neumorphism.css">
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="fa">فارسی</option>
+        </select>
+    </div>
+
+    <!-- Login Form -->
+    <div class="neuro-container">
+        <h1 data-i18n="login">Login</h1>
+        <p class="subtitle" data-i18n="loginSubtitle">Welcome back! Please login to your account</p>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label data-i18n="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    data-i18n="usernamePlaceholder"
+                    placeholder="Enter your username"
+                    required
+                    autocomplete="username"
+                >
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    data-i18n="passwordPlaceholder"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="loginBtn">
+                <span data-i18n="loginButton">Login</span>
+            </button>
+        </form>
+
+        <p class="link-text">
+            <span data-i18n="noAccount">Don't have an account?</span>
+            <a href="register.html" data-i18n="registerHere">Register here</a>
+        </p>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if already logged in
+        if (isAuthenticated()) {
+            redirectToDashboard();
+        }
+
+        // Handle login form submission
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                showAlert(currentLanguage === 'fa' ? 'لطفا تمام فیلدها را پر کنید' : 'Please fill in all fields');
+                return;
+            }
+
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.classList.add('loading');
+            loginBtn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                await loginUser(username, password);
+                showAlert(
+                    currentLanguage === 'fa' ? 'ورود موفقیت‌آمیز بود!' : 'Login successful!',
+                    'success'
+                );
+                setTimeout(() => {
+                    redirectToDashboard();
+                }, 1000);
+            } catch (error) {
+                loginBtn.classList.remove('loading');
+                loginBtn.innerHTML = `<span data-i18n="loginButton">${t('loginButton')}</span>`;
+                showAlert(
+                    currentLanguage === 'fa' ? 'نام کاربری یا رمز عبور اشتباه است' : error.message
+                );
+            }
+        });
+    </script>
+</body>
+</html>

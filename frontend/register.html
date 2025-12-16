@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalMate - Register</title>
+    <link rel="stylesheet" href="css/neumorphism.css">
+</head>
+<body>
+    <!-- Language Selector -->
+    <div class="language-selector">
+        <select id="languageSelect">
+            <option value="en">English</option>
+            <option value="fa">فارسی</option>
+        </select>
+    </div>
+
+    <!-- Register Form -->
+    <div class="neuro-container">
+        <h1 data-i18n="register">Sign Up</h1>
+        <p class="subtitle" data-i18n="registerSubtitle">Create a new account to get started</p>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label data-i18n="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    data-i18n="usernamePlaceholder"
+                    placeholder="Enter your username"
+                    required
+                    autocomplete="username"
+                    minlength="3"
+                >
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    data-i18n="emailPlaceholder"
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    data-i18n="passwordPlaceholder"
+                    placeholder="Enter your password"
+                    required
+                    autocomplete="new-password"
+                    minlength="6"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="registerBtn">
+                <span data-i18n="registerButton">Create Account</span>
+            </button>
+        </form>
+
+        <p class="link-text">
+            <span data-i18n="haveAccount">Already have an account?</span>
+            <a href="login.html" data-i18n="loginHere">Login here</a>
+        </p>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script>
+        // Check if already logged in
+        if (isAuthenticated()) {
+            redirectToDashboard();
+        }
+
+        // Handle register form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !email || !password) {
+                showAlert(currentLanguage === 'fa' ? 'لطفا تمام فیلدها را پر کنید' : 'Please fill in all fields');
+                return;
+            }
+
+            if (username.length < 3) {
+                showAlert(currentLanguage === 'fa' ? 'نام کاربری باید حداقل 3 کاراکتر باشد' : 'Username must be at least 3 characters');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert(currentLanguage === 'fa' ? 'رمز عبور باید حداقل 6 کاراکتر باشد' : 'Password must be at least 6 characters');
+                return;
+            }
+
+            const registerBtn = document.getElementById('registerBtn');
+            registerBtn.classList.add('loading');
+            registerBtn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                await registerUser(username, email, password, currentLanguage);
+                showAlert(
+                    currentLanguage === 'fa' ? 'ثبت نام موفقیت‌آمیز بود!' : 'Registration successful!',
+                    'success'
+                );
+                setTimeout(() => {
+                    redirectToDashboard();
+                }, 1000);
+            } catch (error) {
+                registerBtn.classList.remove('loading');
+                registerBtn.innerHTML = `<span data-i18n="registerButton">${t('registerButton')}</span>`;
+
+                let errorMessage = error.message;
+                if (currentLanguage === 'fa') {
+                    if (errorMessage.includes('Username')) errorMessage = 'این نام کاربری قبلا استفاده شده است';
+                    else if (errorMessage.includes('Email')) errorMessage = 'این ایمیل قبلا استفاده شده است';
+                    else errorMessage = 'خطا در ثبت نام';
+                }
+
+                showAlert(errorMessage);
+            }
+        });
+    </script>
+</body>
+</html>
