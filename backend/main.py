@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, Field, model_validator
 from typing import Optional
 from datetime import timedelta
 import os
@@ -37,9 +37,15 @@ app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 # Pydantic models
 class UserRegister(BaseModel):
     username: str
-    email: EmailStr
-    password: str
+    password: str = Field(..., min_length=6, max_length=1000)
+    confirm_password: str = Field(..., min_length=6, max_length=1000)
     language: Optional[str] = "en"
+
+    @model_validator(mode='after')
+    def check_passwords_match(self):
+        if self.password != self.confirm_password:
+            raise ValueError('Passwords do not match')
+        return self
 
 class UserLogin(BaseModel):
     username: str
@@ -54,7 +60,6 @@ class Token(BaseModel):
 class UserResponse(BaseModel):
     id: int
     username: str
-    email: str
     language: str
 
 @app.post("/api/register", response_model=Token)
@@ -64,16 +69,10 @@ def register(user_data: UserRegister, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="Username already registered")
 
-    # Check if email exists
-    existing_email = db.query(User).filter(User.email == user_data.email).first()
-    if existing_email:
-        raise HTTPException(status_code=400, detail="Email already registered")
-
     # Create new user
     hashed_password = get_password_hash(user_data.password)
     new_user = User(
         username=user_data.username,
-        email=user_data.email,
         hashed_password=hashed_password,
         language=user_data.language
     )
@@ -129,7 +128,6 @@ def get_current_user(token: str, db: Session = Depends(get_db)):
     return {
         "id": user.id,
         "username": user.username,
-        "email": user.email,
         "language": user.language
     }
 

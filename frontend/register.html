@@ -36,19 +36,6 @@
             </div>
 
             <div class="form-group">
-                <label data-i18n="email">Email</label>
-                <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    data-i18n="emailPlaceholder"
-                    placeholder="Enter your email"
-                    required
-                    autocomplete="email"
-                >
-            </div>
-
-            <div class="form-group">
                 <label data-i18n="password">Password</label>
                 <input
                     type="password"
@@ -56,6 +43,20 @@
                     name="password"
                     data-i18n="passwordPlaceholder"
                     placeholder="Enter your password"
+                    required
+                    autocomplete="new-password"
+                    minlength="6"
+                >
+            </div>
+
+            <div class="form-group">
+                <label data-i18n="confirmPassword">Confirm Password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    data-i18n="confirmPasswordPlaceholder"
+                    placeholder="Re-enter your password"
                     required
                     autocomplete="new-password"
                     minlength="6"
@@ -85,10 +86,10 @@
             e.preventDefault();
 
             const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if (!username || !email || !password) {
+            if (!username || !password || !confirmPassword) {
                 showAlert(currentLanguage === 'fa' ? 'لطفا تمام فیلدها را پر کنید' : 'Please fill in all fields');
                 return;
             }
@@ -103,12 +104,17 @@
                 return;
             }
 
+            if (password !== confirmPassword) {
+                showAlert(currentLanguage === 'fa' ? 'رمزهای عبور یکسان نیستند' : 'Passwords do not match');
+                return;
+            }
+
             const registerBtn = document.getElementById('registerBtn');
             registerBtn.classList.add('loading');
             registerBtn.innerHTML = '<span class="spinner"></span>';
 
             try {
-                await registerUser(username, email, password, currentLanguage);
+                await registerUser(username, password, confirmPassword, currentLanguage);
                 showAlert(
                     currentLanguage === 'fa' ? 'ثبت نام موفقیت‌آمیز بود!' : 'Registration successful!',
                     'success'
@@ -123,7 +129,7 @@
                 let errorMessage = error.message;
                 if (currentLanguage === 'fa') {
                     if (errorMessage.includes('Username')) errorMessage = 'این نام کاربری قبلا استفاده شده است';
-                    else if (errorMessage.includes('Email')) errorMessage = 'این ایمیل قبلا استفاده شده است';
+                    else if (errorMessage.includes('match')) errorMessage = 'رمزهای عبور یکسان نیستند';
                     else errorMessage = 'خطا در ثبت نام';
                 }
 

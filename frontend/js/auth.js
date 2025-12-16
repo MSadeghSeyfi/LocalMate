@@ -8,8 +8,8 @@ const translations = {
         login: 'Login',
         register: 'Sign Up',
         username: 'Username',
-        email: 'Email',
         password: 'Password',
+        confirmPassword: 'Confirm Password',
         loginButton: 'Login',
         registerButton: 'Create Account',
         loginSubtitle: 'Welcome back! Please login to your account',
@@ -19,8 +19,8 @@ const translations = {
         loginHere: 'Login here',
         registerHere: 'Register here',
         usernamePlaceholder: 'Enter your username',
-        emailPlaceholder: 'Enter your email',
         passwordPlaceholder: 'Enter your password',
+        confirmPasswordPlaceholder: 'Re-enter your password',
         dashboard: 'Dashboard',
         welcome: 'Welcome',
         logout: 'Logout',
@@ -31,8 +31,8 @@ const translations = {
         login: 'ورود',
         register: 'ثبت نام',
         username: 'نام کاربری',
-        email: 'ایمیل',
         password: 'رمز عبور',
+        confirmPassword: 'تکرار رمز عبور',
         loginButton: 'ورود',
         registerButton: 'ایجاد حساب کاربری',
         loginSubtitle: 'خوش آمدید! لطفا وارد حساب خود شوید',
@@ -42,8 +42,8 @@ const translations = {
         loginHere: 'اینجا وارد شوید',
         registerHere: 'اینجا ثبت نام کنید',
         usernamePlaceholder: 'نام کاربری خود را وارد کنید',
-        emailPlaceholder: 'ایمیل خود را وارد کنید',
         passwordPlaceholder: 'رمز عبور خود را وارد کنید',
+        confirmPasswordPlaceholder: 'رمز عبور خود را دوباره وارد کنید',
         dashboard: 'پنل کاربری',
         welcome: 'خوش آمدید',
         logout: 'خروج',
@@ -146,14 +146,14 @@ async function loginUser(username, password) {
     }
 }
 
-async function registerUser(username, email, password, language) {
+async function registerUser(username, password, confirm_password, language) {
     try {
         const response = await fetch(`${API_BASE}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, email, password, language })
+            body: JSON.stringify({ username, password, confirm_password, language })
         });
 
         if (!response.ok) {
