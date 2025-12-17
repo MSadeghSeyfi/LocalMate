@@ -1,4 +1,4 @@
-from passlib.context import CryptContext
+import bcrypt
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
@@ -9,8 +9,6 @@ SECRET_KEY = "your-secret-key-change-this-in-production"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 def _normalize_password(password: str) -> str:
     """Normalize password to handle bcrypt's 72-byte limit"""
     # If password is longer than 72 bytes, hash it first with SHA256
@@ -20,11 +18,13 @@ def _normalize_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     normalized = _normalize_password(plain_password)
-    return pwd_context.verify(normalized, hashed_password)
+    return bcrypt.checkpw(normalized.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_password_hash(password: str) -> str:
     normalized = _normalize_password(password)
-    return pwd_context.hash(normalized)
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(normalized.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()

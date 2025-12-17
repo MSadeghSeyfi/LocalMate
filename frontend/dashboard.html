@@ -151,9 +151,13 @@
         <!-- Main Content Area -->
         <div class="content-area">
             <div class="empty-state">
-                <h2>🚀</h2>
-                <h2 id="emptyTitle">Coming Soon</h2>
-                <p id="emptyText">This dashboard is under construction. More features will be added soon!</p>
+                <h2>📝</h2>
+                <h2 id="welcomeTitle">Welcome to LocalMate</h2>
+                <p id="welcomeText">Manage your tasks and stay organized!</p>
+                <br>
+                <button class="neuro-btn" id="goToTasksBtn" style="margin-top: 20px;">
+                    <span data-i18n="goToTasks">Manage Tasks</span>
+                </button>
             </div>
         </div>
     </div>
@@ -169,29 +173,34 @@
         const userData = getUserData();
         document.getElementById('usernameDisplay').textContent = userData.username || 'User';
 
-        // Update empty state text based on language
-        function updateEmptyState() {
-            const emptyTitle = document.getElementById('emptyTitle');
-            const emptyText = document.getElementById('emptyText');
+        // Update welcome text based on language
+        function updateWelcomeState() {
+            const welcomeTitle = document.getElementById('welcomeTitle');
+            const welcomeText = document.getElementById('welcomeText');
 
             if (currentLanguage === 'fa') {
-                emptyTitle.textContent = 'به زودی';
-                emptyText.textContent = 'این پنل در حال ساخت است. ویژگی‌های بیشتری به زودی اضافه خواهند شد!';
+                welcomeTitle.textContent = 'به LocalMate خوش آمدید';
+                welcomeText.textContent = 'وظایف خود را مدیریت کنید و سازمان‌یافته بمانید!';
             } else {
-                emptyTitle.textContent = 'Coming Soon';
-                emptyText.textContent = 'This dashboard is under construction. More features will be added soon!';
+                welcomeTitle.textContent = 'Welcome to LocalMate';
+                welcomeText.textContent = 'Manage your tasks and stay organized!';
             }
         }
 
-        // Override updatePageText to also update empty state
+        // Override updatePageText to also update welcome state
         const originalUpdatePageText = updatePageText;
         updatePageText = function() {
             originalUpdatePageText();
-            updateEmptyState();
+            updateWelcomeState();
         };
 
         // Initial update
-        updateEmptyState();
+        updateWelcomeState();
+
+        // Go to Tasks button
+        document.getElementById('goToTasksBtn').addEventListener('click', () => {
+            window.location.href = '/static/tasks.html';
+        });
 
         // Logout handler
         document.getElementById('logoutBtn').addEventListener('click', () => {

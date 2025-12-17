@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalMate - Tasks</title>
+    <link rel="stylesheet" href="css/neumorphism.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-jalaali@0.10.0/moment-jalaali.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-left h1 {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        body.rtl .header-left h1 {
+            text-align: right;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .neuro-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--bg-light);
+            color: var(--text-primary);
+            box-shadow:
+                5px 5px 10px var(--shadow-dark),
+                -5px -5px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .neuro-btn:hover {
+            box-shadow:
+                3px 3px 6px var(--shadow-dark),
+                -3px -3px 6px var(--shadow-light);
+        }
+
+        .neuro-btn:active {
+            box-shadow:
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
+        }
+
+        .neuro-btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .language-select-dashboard {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: var(--bg-light);
+            box-shadow:
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .tasks-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .tasks-column {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .task-section {
+            background: var(--bg-light);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow:
+                10px 10px 20px var(--shadow-dark),
+                -10px -10px 20px var(--shadow-light);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .add-task-form {
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 600;
+            text-align: left;
+        }
+
+        body.rtl .form-group label {
+            text-align: right;
+        }
+
+        .neuro-input, .neuro-textarea, .neuro-date-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--bg-light);
+            box-shadow:
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        .neuro-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .neuro-input:focus, .neuro-textarea:focus, .neuro-date-input:focus {
+            outline: none;
+            box-shadow:
+                inset 4px 4px 8px var(--shadow-dark),
+                inset -4px -4px 8px var(--shadow-light);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-item {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow:
+                5px 5px 10px var(--shadow-dark),
+                -5px -5px 10px var(--shadow-light);
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover {
+            box-shadow:
+                3px 3px 6px var(--shadow-dark),
+                -3px -3px 6px var(--shadow-light);
+        }
+
+        .task-item.completed {
+            opacity: 0.6;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .task-title-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            flex: 1;
+        }
+
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: var(--bg-light);
+            box-shadow:
+                inset 2px 2px 4px var(--shadow-dark),
+                inset -2px -2px 4px var(--shadow-light);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .task-checkbox.checked {
+            background: var(--accent);
+            box-shadow:
+                2px 2px 4px var(--shadow-dark),
+                -2px -2px 4px var(--shadow-light);
+            position: relative;
+        }
+
+        .task-checkbox.checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        body.rtl .task-title {
+            text-align: right;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        body.rtl .task-description {
+            text-align: right;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(163, 177, 198, 0.2);
+        }
+
+        .task-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            background: var(--bg-light);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            cursor: pointer;
+            box-shadow:
+                3px 3px 6px var(--shadow-dark),
+                -3px -3px 6px var(--shadow-light);
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .btn-icon:hover {
+            box-shadow:
+                2px 2px 4px var(--shadow-dark),
+                -2px -2px 4px var(--shadow-light);
+        }
+
+        .btn-icon:active {
+            box-shadow:
+                inset 2px 2px 4px var(--shadow-dark),
+                inset -2px -2px 4px var(--shadow-light);
+        }
+
+        .btn-move {
+            color: var(--accent);
+        }
+
+        .btn-delete {
+            color: var(--error);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .timer-section {
+            background: var(--bg-light);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow:
+                10px 10px 20px var(--shadow-dark),
+                -10px -10px 20px var(--shadow-light);
+        }
+
+        .timer-display {
+            background: var(--bg-light);
+            border-radius: 15px;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow:
+                inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+            margin: 20px 0;
+        }
+
+        .timer-display.active {
+            box-shadow:
+                inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+            background: linear-gradient(145deg, #e8edf4, #d8dde4);
+        }
+
+        .timer-time {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .timer-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .timer-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .task-selector {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: var(--bg-light);
+            box-shadow:
+                inset 3px 3px 6px var(--shadow-dark),
+                inset -3px -3px 6px var(--shadow-light);
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .task-time-info {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow:
+                5px 5px 10px var(--shadow-dark),
+                -5px -5px 10px var(--shadow-light);
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .task-time-info h4 {
+            margin: 0 0 10px 0;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .task-time-info .time-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        @media (max-width: 968px) {
+            .tasks-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .header-left h1 {
+                text-align: center !important;
+            }
+
+            .task-section {
+                padding: 20px;
+            }
+
+            .task-footer {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            body.rtl .task-footer {
+                align-items: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1 data-i18n="tasks">Tasks</h1>
+            </div>
+            <div class="header-right">
+                <select id="languageSelect" class="language-select-dashboard">
+                    <option value="en">English</option>
+                    <option value="fa">فارسی</option>
+                </select>
+                <button class="neuro-btn" id="backToDashboard">
+                    <span data-i18n="backToDashboard">Dashboard</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Tasks Layout -->
+        <div class="tasks-layout">
+            <!-- Left Column: Tasks -->
+            <div class="tasks-column">
+                <!-- Today's Tasks Section -->
+                <div class="task-section">
+                <div class="section-header">
+                    <h2 data-i18n="todayTasks">Today's Tasks</h2>
+                </div>
+
+                <!-- Add Task Form -->
+                <div class="add-task-form">
+                    <form id="addTaskForm">
+                        <div class="form-group">
+                            <label data-i18n="taskTitle">Task Title</label>
+                            <input type="text" id="taskTitle" class="neuro-input" data-i18n-placeholder="taskTitlePlaceholder" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="taskDescription">Description (Optional)</label>
+                            <textarea id="taskDescription" class="neuro-textarea" data-i18n-placeholder="taskDescriptionPlaceholder"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="dueDate">Due Date</label>
+                            <input type="datetime-local" id="taskDueDate" class="neuro-date-input" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" data-i18n="addTask">Add Task</button>
+                    </form>
+                </div>
+
+                <!-- Today's Tasks List -->
+                <div id="todayTasksList" class="task-list">
+                    <!-- Tasks will be dynamically loaded here -->
+                </div>
+            </div>
+
+            <!-- Pending Tasks Section -->
+            <div class="task-section">
+                <div class="section-header">
+                    <h2 data-i18n="pendingTasks">Pending Tasks</h2>
+                </div>
+
+                <!-- Pending Tasks List -->
+                <div id="pendingTasksList" class="task-list">
+                    <!-- Pending tasks will be dynamically loaded here -->
+                </div>
+            </div>
+            </div>
+
+            <!-- Right Column: Timer -->
+            <div class="tasks-column">
+                <!-- Timer Section -->
+                <div class="timer-section">
+                    <div class="section-header">
+                        <h2 data-i18n="timer">Timer</h2>
+                    </div>
+
+                    <!-- Timer Display -->
+                    <div class="timer-display" id="timerDisplay">
+                        <div class="timer-time" id="timerTime">00:00</div>
+                        <div class="timer-label" id="timerLabel" data-i18n="timeRemaining">Time Remaining</div>
+                    </div>
+
+                    <!-- Timer Controls -->
+                    <div class="timer-controls">
+                        <div class="form-group">
+                            <label data-i18n="selectTask">Select a task</label>
+                            <select id="taskSelector" class="task-selector">
+                                <option value="" data-i18n="selectTask">Select a task</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label data-i18n="duration">Duration (minutes)</label>
+                            <input type="number" id="timerDuration" class="neuro-input" min="1" max="600" data-i18n-placeholder="durationPlaceholder" placeholder="Enter duration in minutes (e.g., 70)">
+                        </div>
+
+                        <button class="btn btn-primary" id="timerButton" data-i18n="startTimer">Start Timer</button>
+                    </div>
+
+                    <!-- Task Time Info -->
+                    <div class="task-time-info" id="taskTimeInfo" style="display: none;">
+                        <h4 data-i18n="totalTime">Total Time</h4>
+                        <div class="time-value" id="totalTimeValue">0 <span data-i18n="minutes">minutes</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/tasks.js"></script>
+</body>
+</html>
